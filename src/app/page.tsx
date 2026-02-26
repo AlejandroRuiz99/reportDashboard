@@ -21,6 +21,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   
+  const [lastDataDate, setLastDataDate] = useState<Date | null>(null)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
 
@@ -36,14 +37,20 @@ export default function Home() {
       const timeSeriesData = await getTimeSeriesData(selectedYear, selectedMonth, 6)
       const predictionData = await getPrediction(selectedYear, selectedMonth)
       
-      // Pasar tanto datos del mes como datos históricos al dashboard
+      const latestDate = allData.reduce((latest, sale) => {
+        const d = new Date(sale.orderDate)
+        return d > latest ? d : latest
+      }, new Date(0))
+      setLastDataDate(latestDate.getTime() > 0 ? latestDate : null)
+
       setSalesData({ current: data, all: allData })
       setComparison(comparisonData)
       setTimeSeries(timeSeriesData)
       setPrediction(predictionData)
-    } catch (err) {
+    } catch (err: any) {
       console.error('Error:', err)
-      setError('Error al cargar datos de Supabase. Verifica tu configuración.')
+      const detail = err?.message || err?.details || String(err)
+      setError(`Error al cargar datos: ${detail}`)
     } finally {
       setLoading(false)
     }
@@ -65,9 +72,27 @@ export default function Home() {
           <h1 className="text-4xl font-bold text-gray-900 mb-2 text-center">
             Dashboard de Ventas
           </h1>
-          <p className="text-gray-600 text-center mb-6">
+          <p className="text-gray-600 text-center mb-4">
             Análisis mensual con comparativas
           </p>
+
+          {lastDataDate && (
+            <div className="flex justify-center mb-5">
+              <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 rounded-full text-sm">
+                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                <span>
+                  Últimos datos disponibles:{' '}
+                  <strong>
+                    {lastDataDate.toLocaleDateString('es-ES', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric',
+                    })}
+                  </strong>
+                </span>
+              </div>
+            </div>
+          )}
 
           {/* Selector de mes/año */}
           <div className="flex justify-center gap-4 mb-6">
