@@ -39,10 +39,11 @@ export default function TemporalAnalysisChart({ dayData, hourData }: TemporalAna
               stroke="#6b7280"
             />
             <Tooltip 
-              formatter={(value: number, name: string) => {
-                if (name === 'sales') return [value, 'Ventas']
-                if (name === 'revenue') return [`€${value.toFixed(2)}`, 'Revenue']
-                return [value, name]
+              formatter={(value, name) => {
+                const v = Number(value ?? 0)
+                if (name === 'sales') return [v, 'Ventas']
+                if (name === 'revenue') return [`€${v.toFixed(2)}`, 'Revenue']
+                return [v, name]
               }}
               contentStyle={{ 
                 backgroundColor: '#fff', 
@@ -83,7 +84,7 @@ export default function TemporalAnalysisChart({ dayData, hourData }: TemporalAna
               stroke="#6b7280"
             />
             <Tooltip 
-              formatter={(value: number) => [value, 'Ventas']}
+              formatter={(value) => [Number(value ?? 0), 'Ventas']}
               contentStyle={{ 
                 backgroundColor: '#fff', 
                 border: '1px solid #e5e7eb',

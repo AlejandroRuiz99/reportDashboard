@@ -35,10 +35,11 @@ export default function SalesChart({ data }: SalesChartProps) {
               border: '1px solid #E5E7EB',
               borderRadius: '8px',
             }}
-            formatter={(value: number, name: string) => {
-              if (name === 'count') return [value, 'Consultas']
-              if (name === 'revenue') return [`€${value.toFixed(2)}`, 'Revenue']
-              return [value, name]
+            formatter={(value, name) => {
+              const v = Number(value ?? 0)
+              if (name === 'count') return [v, 'Consultas']
+              if (name === 'revenue') return [`€${v.toFixed(2)}`, 'Revenue']
+              return [v, name]
             }}
           />
           <Line

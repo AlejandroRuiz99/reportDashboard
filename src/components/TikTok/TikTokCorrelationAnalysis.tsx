@@ -129,7 +129,7 @@ export default function TikTokCorrelationAnalysis({ insights }: TikTokCorrelatio
             <XAxis dataKey="day" tick={{ fontSize: 12 }} stroke="#6b7280" />
             <YAxis tick={{ fontSize: 12 }} stroke="#6b7280" />
             <Tooltip 
-              formatter={(value: number) => [value.toFixed(1), 'Ventas promedio']}
+              formatter={(value) => [Number(value ?? 0).toFixed(1), 'Ventas promedio']}
               contentStyle={{ 
                 backgroundColor: '#fff', 
                 border: '1px solid #e5e7eb',

@@ -35,7 +35,7 @@ export default function TimeSeriesChart({ data, showRevenue = true, showSales = 
                 tickFormatter={(value) => `€${value}`}
               />
               <Tooltip 
-                formatter={(value: number) => [`€${value.toFixed(2)}`, 'Revenue']}
+                formatter={(value) => [`€${Number(value ?? 0).toFixed(2)}`, 'Revenue']}
                 contentStyle={{ 
                   backgroundColor: '#fff', 
                   border: '1px solid #e5e7eb',
@@ -73,7 +73,7 @@ export default function TimeSeriesChart({ data, showRevenue = true, showSales = 
                 stroke="#6b7280"
               />
               <Tooltip 
-                formatter={(value: number) => [value, 'Consultas']}
+                formatter={(value) => [Number(value ?? 0), 'Consultas']}
                 contentStyle={{ 
                   backgroundColor: '#fff', 
                   border: '1px solid #e5e7eb',

@@ -35,8 +35,8 @@ export default function TrafficSourcesChart({ sources }: TrafficSourcesChartProp
             ))}
           </Pie>
           <Tooltip
-            formatter={(value: number, name: string, props: any) => [
-              `${value} consultas (${props.payload.percentage.toFixed(1)}%)`,
+            formatter={(value, _name, props: any) => [
+              `${Number(value ?? 0)} consultas (${props.payload.percentage.toFixed(1)}%)`,
               props.payload.name
             ]}
           />
