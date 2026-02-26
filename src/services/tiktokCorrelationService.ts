@@ -85,20 +85,22 @@ export class TikTokCorrelationService {
     const dayNames = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
     const dayStats = new Map<string, { totalSales: number; count: number }>()
 
-    // Inicializar
     dayNames.forEach(day => dayStats.set(day, { totalSales: 0, count: 0 }))
 
-    // Calcular ventas promedio por día de publicación
     this.videos.forEach(video => {
-      const dayIndex = new Date(video.date).getDay()
+      const videoDate = new Date(video.date)
+      const dayIndex = videoDate.getDay()
       const dayName = dayNames[dayIndex]
-      
-      const windowEnd = new Date(video.date)
+
+      const windowStart = new Date(videoDate)
+      windowStart.setHours(0, 0, 0, 0)
+      const windowEnd = new Date(videoDate)
       windowEnd.setDate(windowEnd.getDate() + 7)
-      
+      windowEnd.setHours(23, 59, 59, 999)
+
       const salesInWindow = this.sales.filter(sale => {
         const saleDate = new Date(sale.orderDate)
-        return saleDate >= video.date && saleDate <= windowEnd
+        return saleDate >= windowStart && saleDate <= windowEnd
       }).length
 
       const current = dayStats.get(dayName)!
@@ -111,7 +113,7 @@ export class TikTokCorrelationService {
     return Array.from(dayStats.entries())
       .map(([day, stats]) => ({
         day,
-        avgSales: stats.count > 0 ? stats.totalSales / stats.count : 0,
+        avgSales: stats.count > 0 ? Math.round((stats.totalSales / stats.count) * 10) / 10 : 0,
       }))
       .sort((a, b) => b.avgSales - a.avgSales)
   }

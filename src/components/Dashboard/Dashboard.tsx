@@ -14,7 +14,7 @@ import TrafficSourcesChart from '../Charts/TrafficSourcesChart'
 import TimeSeriesChart from '../Charts/TimeSeriesChart'
 import TemporalAnalysisChart from '../Charts/TemporalAnalysisChart'
 import PredictionCard from '../Charts/PredictionCard'
-import UploadTikTokCSV from '../Upload/UploadTikTokCSV'
+import TikTokFetchForm from '../TikTok/TikTokFetchForm'
 import TikTokCorrelationAnalysis from '../TikTok/TikTokCorrelationAnalysis'
 
 interface DashboardProps {
@@ -340,7 +340,11 @@ export default function Dashboard({ data, comparison, timeSeries, prediction, se
         </h3>
         
         {!tiktokInsights ? (
-          <UploadTikTokCSV onDataLoaded={handleTikTokDataLoaded} />
+          <TikTokFetchForm
+            selectedMonth={selectedMonth}
+            selectedYear={selectedYear}
+            onDataLoaded={handleTikTokDataLoaded}
+          />
         ) : (
           <div className="space-y-6">
             <div className="flex justify-between items-center">
@@ -354,7 +358,7 @@ export default function Dashboard({ data, comparison, timeSeries, prediction, se
                 }}
                 className="px-4 py-2 bg-pink-600 text-white text-sm rounded-lg hover:bg-pink-700 transition"
               >
-                Cargar Otro CSV
+                Cargar otro perfil
               </button>
             </div>
             <TikTokCorrelationAnalysis insights={tiktokInsights} />
