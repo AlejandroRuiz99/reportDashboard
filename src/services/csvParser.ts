@@ -3,13 +3,10 @@ import type { SalesData } from '@/types/sales'
 
 interface WooCommerceRow {
   order_id: string
-  order_number: string
   order_date: string
-  paid_date: string
   status: string
   order_total: string
   'Product Item 1 Name': string
-  'Product Item 1 id': string
   'Product Item 1 Quantity': string
   'meta:_wc_order_attribution_utm_source': string
   'meta:_wc_order_attribution_utm_medium': string
@@ -20,7 +17,6 @@ interface WooCommerceRow {
   shipping_country: string
   payment_method_title: string
   customer_email: string
-  customer_ip_address: string
 }
 
 export function parseWooCommerceCSV(file: File): Promise<SalesData[]> {
@@ -31,33 +27,21 @@ export function parseWooCommerceCSV(file: File): Promise<SalesData[]> {
       complete: (results) => {
         try {
           const salesData: SalesData[] = results.data.map((row) => ({
-            orderId: row.order_id || '',
-            orderNumber: row.order_number || '',
-            orderDate: new Date(row.order_date),
-            paidDate: new Date(row.paid_date),
-            status: row.status || '',
-            orderTotal: parseFloat(row.order_total) || 0,
-            productName: row['Product Item 1 Name'] || '',
-            productId: row['Product Item 1 id'] || '',
-            quantity: parseInt(row['Product Item 1 Quantity']) || 1,
-            
-            // UTM Attribution - Normalizar nombres de colaboradores
-            utmSource: normalizeCollaborator(row['meta:_wc_order_attribution_utm_source']),
-            utmMedium: row['meta:_wc_order_attribution_utm_medium'] || null,
-            utmCampaign: row['meta:_wc_order_attribution_utm_campaign'] || null,
-            sourceType: parseSourceType(row['meta:_wc_order_attribution_source_type']),
-            
-            // Device & Location
-            deviceType: parseDeviceType(row['meta:_wc_order_attribution_device_type']),
-            shippingState: row.shipping_state || '',
+            orderId:         row.order_id || '',
+            orderDate:       new Date(row.order_date),
+            status:          row.status || '',
+            orderTotal:      parseFloat(row.order_total) || 0,
+            productName:     row['Product Item 1 Name'] || '',
+            quantity:        parseInt(row['Product Item 1 Quantity']) || 1,
+            utmSource:       normalizeCollaborator(row['meta:_wc_order_attribution_utm_source']),
+            utmMedium:       row['meta:_wc_order_attribution_utm_medium'] || null,
+            utmCampaign:     row['meta:_wc_order_attribution_utm_campaign'] || null,
+            sourceType:      parseSourceType(row['meta:_wc_order_attribution_source_type']),
+            deviceType:      parseDeviceType(row['meta:_wc_order_attribution_device_type']),
+            shippingState:   row.shipping_state || '',
             shippingCountry: row.shipping_country || '',
-            
-            // Payment
-            paymentMethod: row.payment_method_title || '',
-            
-            // Customer
-            customerEmail: row.customer_email || '',
-            customerIp: row.customer_ip_address || '',
+            paymentMethod:   row.payment_method_title || '',
+            customerEmail:   row.customer_email || '',
           }))
 
           // Filtrar solo pedidos completados
@@ -85,6 +69,9 @@ function normalizeCollaborator(source: string | null): string | null {
   // Normalizar variaciones de nombres
   if (normalized.includes('margareth') || normalized.includes('margare')) {
     return 'Margareth'
+  }
+  if (normalized.includes('inma')) {
+    return 'Inma'
   }
   if (normalized.includes('mariajose') || normalized.includes('maria') || normalized.includes('jose')) {
     return 'María José'

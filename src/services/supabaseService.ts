@@ -15,7 +15,7 @@ export class SupabaseService {
 
     const { data, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('order_id,order_date,status,order_total,product_name,product_quantity,utm_source,source_type,device_type,customer_user,shipping_state,shipping_country,payment_method')
       .gte('order_date', startDate.toISOString())
       .lte('order_date', endDate.toISOString())
       .eq('status', 'completed')
@@ -38,7 +38,7 @@ export class SupabaseService {
 
     const { data, error } = await supabase
       .from('orders')
-      .select('*')
+      .select('order_id,order_date,status,order_total,product_name,product_quantity,utm_source,source_type,device_type,customer_user,shipping_state,shipping_country,payment_method')
       .eq('status', 'completed')
       .order('order_date', { ascending: false })
 
@@ -55,26 +55,22 @@ export class SupabaseService {
    */
   private mapToSalesData(rows: any[]): SalesData[] {
     return rows.map(row => ({
-      orderId: row.order_id || row.id,
-      orderNumber: row.order_number || row.order_id,
-      orderDate: new Date(row.order_date),
-      paidDate: new Date(row.paid_date || row.order_date),
-      status: row.status,
-      orderTotal: parseFloat(row.order_total || 0),
-      productName: row['Product Item 1 Name'] || 'Consulta',
-      productId: row['Product Item 1 id'] || '',
-      quantity: parseInt(row['Product Item 1 Quantity'] || '1'),
-      utmSource: this.normalizeCollaborator(row['meta:_wc_order_attribution_utm_source']),
-      utmMedium: null,
-      utmCampaign: null,
-      sourceType: this.mapSourceType(row['meta:_wc_order_attribution_source_type']),
-      deviceType: row['meta:_wc_order_attribution_device_type'] === 'Mobile' ? 'Mobile' : 
-                  row['meta:_wc_order_attribution_device_type'] === 'Desktop' ? 'Desktop' : 'unknown',
-      shippingState: row.shipping_state || '',
+      orderId:         row.order_id,
+      orderDate:       new Date(row.order_date),
+      status:          row.status,
+      orderTotal:      parseFloat(row.order_total || 0),
+      productName:     row.product_name || 'Consulta',
+      quantity:        parseInt(row.product_quantity || '1'),
+      utmSource:       this.normalizeCollaborator(row.utm_source),
+      utmMedium:       null,
+      utmCampaign:     null,
+      sourceType:      this.mapSourceType(row.source_type),
+      deviceType:      row.device_type === 'Mobile' ? 'Mobile' :
+                       row.device_type === 'Desktop' ? 'Desktop' : 'unknown',
+      shippingState:   row.shipping_state || '',
       shippingCountry: row.shipping_country || 'ES',
-      paymentMethod: row.payment_method_title || '',
-      customerEmail: row.customer_user || '',
-      customerIp: row.customer_ip_address || '',
+      paymentMethod:   row.payment_method || '',
+      customerEmail:   row.customer_user || '',
     }))
   }
 
@@ -85,7 +81,8 @@ export class SupabaseService {
     // Colaboradoras válidas
     if (lower === 'mariajose' || lower === 'maria jose' || lower === 'maria_jose') return 'MariaJose'
     if (lower === 'margareth') return 'Margareth'
-    
+    if (lower === 'inma') return 'Inma'
+
     // Filtrar fuentes que NO son colaboradoras
     const nonCollaborators = ['ig', 'instagram', 'facebook', 'fb', 'tiktok', 'google', 'youtube', 'direct', 'organic', 'typein']
     if (nonCollaborators.includes(lower)) return null

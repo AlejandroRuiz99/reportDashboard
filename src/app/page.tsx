@@ -20,7 +20,9 @@ export default function Home() {
   const [prediction, setPrediction] = useState<PredictionData | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+  const [syncing, setSyncing] = useState(false)
+  const [syncResult, setSyncResult] = useState<{ ok: boolean; message: string } | null>(null)
+
   const [lastDataDate, setLastDataDate] = useState<Date | null>(null)
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear())
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1)
@@ -56,7 +58,21 @@ export default function Home() {
     }
   }
 
-  // No cargar automáticamente, esperar a que el usuario configure y haga clic
+  const syncData = async () => {
+    setSyncing(true)
+    setSyncResult(null)
+    try {
+      const res = await fetch('/api/sync-orders', { method: 'POST' })
+      const json = await res.json()
+      if (!json.ok) throw new Error(json.error || 'Error desconocido')
+      setSyncResult({ ok: true, message: json.message || `Se importaron ${json.inserted} pedidos` })
+      await loadData()
+    } catch (err: any) {
+      setSyncResult({ ok: false, message: `Error al sincronizar: ${err.message}` })
+    } finally {
+      setSyncing(false)
+    }
+  }
 
   const months = [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
@@ -91,6 +107,37 @@ export default function Home() {
                   </strong>
                 </span>
               </div>
+            </div>
+          )}
+
+          {/* Boton sincronizar y resultado */}
+          <div className="flex justify-center mb-4">
+            <button
+              onClick={syncData}
+              disabled={syncing || loading}
+              className="inline-flex items-center gap-2 px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 text-sm font-medium"
+            >
+              {syncing ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  Sincronizando con WooCommerce...
+                </>
+              ) : (
+                <>
+                  <span>↻</span>
+                  Actualizar datos desde WooCommerce
+                </>
+              )}
+            </button>
+          </div>
+
+          {syncResult && (
+            <div className={`max-w-xl mx-auto mb-4 px-4 py-3 rounded-lg text-sm font-medium text-center border ${
+              syncResult.ok
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                : 'bg-red-50 border-red-200 text-red-800'
+            }`}>
+              {syncResult.ok ? '✓' : '⚠️'} {syncResult.message}
             </div>
           )}
 

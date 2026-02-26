@@ -1,31 +1,27 @@
 export interface SalesData {
   orderId: string
-  orderNumber: string
   orderDate: Date
-  paidDate: Date
   status: string
   orderTotal: number
   productName: string
-  productId: string
   quantity: number
-  
+
   // UTM Attribution
   utmSource: string | null
   utmMedium: string | null
   utmCampaign: string | null
   sourceType: 'utm' | 'typein' | 'organic' | 'referral' | 'unknown'
-  
+
   // Device & Location
   deviceType: 'Mobile' | 'Desktop' | 'unknown'
   shippingState: string
   shippingCountry: string
-  
+
   // Payment
   paymentMethod: string
-  
+
   // Customer
   customerEmail: string
-  customerIp: string
 }
 
 export interface CollaboratorStats {
