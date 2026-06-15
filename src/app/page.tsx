@@ -1,6 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import Image from 'next/image'
 import Dashboard from '@/components/Dashboard/Dashboard'
 import type { SalesData } from '@/types/sales'
 import { 
@@ -34,7 +35,7 @@ export default function Home() {
     try {
       const service = new SupabaseService()
       const data = await service.getSalesByMonth(selectedYear, selectedMonth)
-      const allData = await service.getAllSales() // Para ranking general
+      const allData = await service.getAllSales()
       const comparisonData = await getComparisonData(selectedYear, selectedMonth)
       const timeSeriesData = await getTimeSeriesData(selectedYear, selectedMonth, 6)
       const predictionData = await getPrediction(selectedYear, selectedMonth)
@@ -82,22 +83,57 @@ export default function Home() {
   const years = Array.from({ length: 5 }, (_, i) => new Date().getFullYear() - i)
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2 text-center">
+    <main className="min-h-screen bg-brand-cream">
+      {/* Top brand bar */}
+      <header className="bg-brand-black text-white shadow-brand-lg">
+        <div className="container mx-auto px-4 sm:px-6 py-4 sm:py-6 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+            <div className="relative w-10 h-10 sm:w-12 sm:h-12 flex-shrink-0">
+              <Image
+                src="/logo-mono.png"
+                alt="Compromiso Legal"
+                fill
+                className="object-contain invert"
+                priority
+              />
+            </div>
+            <div className="min-w-0">
+              <p className="font-serif text-base sm:text-xl font-bold text-brand-gold leading-tight truncate">
+                Compromiso Legal
+              </p>
+              <p className="text-[10px] sm:text-xs text-gray-300 uppercase tracking-widest truncate">
+                Dashboard de Reportes
+              </p>
+            </div>
+          </div>
+          <div className="hidden sm:block h-10 w-px bg-brand-gold/30" />
+          <div className="hidden md:block text-right">
+            <p className="text-xs text-gray-400 uppercase tracking-wider">Período</p>
+            <p className="text-sm font-medium text-brand-gold-light">
+              {months[selectedMonth - 1]} {selectedYear}
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-10">
+        <div className="mb-8 sm:mb-10">
+          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-brand-black mb-2 text-center">
             Dashboard de Ventas
           </h1>
-          <p className="text-gray-600 text-center mb-4">
+          <p className="text-brand-muted text-center mb-5 text-sm sm:text-base">
             Análisis mensual con comparativas
           </p>
+          <div className="flex justify-center mb-6">
+            <div className="brand-divider w-24" />
+          </div>
 
           {lastDataDate && (
-            <div className="flex justify-center mb-5">
-              <div className="inline-flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-800 px-4 py-2 rounded-full text-sm">
-                <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
-                <span>
-                  Últimos datos disponibles:{' '}
+            <div className="flex justify-center mb-5 px-2">
+              <div className="inline-flex items-center gap-2 bg-white border border-brand-gold/30 text-brand-ink px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm shadow-brand max-w-full">
+                <span className="w-2 h-2 bg-brand-gold rounded-full animate-pulse flex-shrink-0" />
+                <span className="truncate">
+                  Últimos datos:{' '}
                   <strong>
                     {lastDataDate.toLocaleDateString('es-ES', {
                       day: 'numeric',
@@ -110,16 +146,16 @@ export default function Home() {
             </div>
           )}
 
-          {/* Boton sincronizar y resultado */}
-          <div className="flex justify-center mb-4">
+          {/* Boton sincronizar */}
+          <div className="flex justify-center mb-4 px-2">
             <button
               onClick={syncData}
               disabled={syncing || loading}
-              className="inline-flex items-center gap-2 px-5 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition disabled:opacity-50 text-sm font-medium"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-brand-black text-brand-gold border border-brand-gold/40 rounded-lg hover:bg-brand-ink hover:border-brand-gold transition disabled:opacity-50 text-sm font-medium shadow-brand"
             >
               {syncing ? (
                 <>
-                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span className="w-4 h-4 border-2 border-brand-gold border-t-transparent rounded-full animate-spin" />
                   Sincronizando con WooCommerce...
                 </>
               ) : (
@@ -134,19 +170,19 @@ export default function Home() {
           {syncResult && (
             <div className={`max-w-xl mx-auto mb-4 px-4 py-3 rounded-lg text-sm font-medium text-center border ${
               syncResult.ok
-                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                ? 'bg-white border-brand-gold/40 text-brand-ink'
                 : 'bg-red-50 border-red-200 text-red-800'
             }`}>
               {syncResult.ok ? '✓' : '⚠️'} {syncResult.message}
             </div>
           )}
 
-          {/* Selector de mes/año */}
-          <div className="flex justify-center gap-4 mb-6">
+          {/* Selector de mes/año - responsive grid en mobile, flex en desktop */}
+          <div className="grid grid-cols-2 sm:flex sm:justify-center gap-2 sm:gap-4 mb-6 max-w-xl mx-auto">
             <select
               value={selectedMonth}
               onChange={(e) => setSelectedMonth(parseInt(e.target.value))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
             >
               {months.map((month, index) => (
                 <option key={index} value={index + 1}>{month}</option>
@@ -156,7 +192,7 @@ export default function Home() {
             <select
               value={selectedYear}
               onChange={(e) => setSelectedYear(parseInt(e.target.value))}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary"
+              className="w-full sm:w-auto px-3 sm:px-4 py-2 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-brand-gold focus:border-brand-gold"
             >
               {years.map((year) => (
                 <option key={year} value={year}>{year}</option>
@@ -166,7 +202,7 @@ export default function Home() {
             <button
               onClick={loadData}
               disabled={loading}
-              className="px-6 py-2 bg-primary text-white rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+              className="col-span-2 sm:col-span-1 px-6 py-2 bg-brand-gold text-brand-black font-semibold rounded-lg hover:bg-brand-gold-dark transition disabled:opacity-50 shadow-gold text-sm"
             >
               {loading ? 'Cargando...' : 'Cargar'}
             </button>
@@ -188,7 +224,7 @@ export default function Home() {
 
         {loading ? (
           <div className="flex justify-center items-center py-20">
-            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-primary"></div>
+            <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-brand-gold"></div>
           </div>
         ) : salesData && comparison && timeSeries && prediction ? (
           <Dashboard 
@@ -201,6 +237,13 @@ export default function Home() {
           />
         ) : null}
       </div>
+
+      <footer className="mt-12 border-t border-brand-gold/20 bg-brand-black text-gray-400 py-6">
+        <div className="container mx-auto px-4 sm:px-6 text-center">
+          <p className="font-serif text-brand-gold text-sm sm:text-base">Compromiso Legal</p>
+          <p className="text-xs mt-1">Dashboard de reportes © {new Date().getFullYear()}</p>
+        </div>
+      </footer>
     </main>
   )
 }

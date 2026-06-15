@@ -3,13 +3,59 @@
 @tailwind utilities;
 
 :root {
-  --primary: #6366F1;
+  --brand-black: #0B1320;
+  --brand-dark: #070C16;
+  --brand-ink: #1A2233;
+  --brand-gold: #C9A961;
+  --brand-gold-dark: #A8893F;
+  --brand-gold-light: #E2C988;
+  --brand-cream: #FAF7F0;
+  --brand-muted: #6B7280;
   --success: #10B981;
   --warning: #F59E0B;
   --error: #EF4444;
-  --neutral: #6B7280;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  color: var(--brand-ink);
+  background-color: var(--brand-cream);
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: 'Playfair Display', Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+.brand-divider {
+  background-image: linear-gradient(90deg, transparent, var(--brand-gold), transparent);
+  height: 1px;
+}
+
+select,
+input,
+button {
+  font-family: inherit;
+}
+
+select:focus,
+input:focus,
+button:focus-visible {
+  outline: 2px solid var(--brand-gold);
+  outline-offset: 2px;
+}
+
+@media (max-width: 640px) {
+  table {
+    font-size: 0.85rem;
+  }
 }
