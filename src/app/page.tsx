@@ -93,7 +93,7 @@ export default function Home() {
                 src="/logo-mono.png"
                 alt="Compromiso Legal"
                 fill
-                className="object-contain invert"
+                className="object-contain logo-gold"
                 priority
               />
             </div>

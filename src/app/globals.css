@@ -41,6 +41,12 @@ h4 {
   height: 1px;
 }
 
+/* Colorize a black/dark PNG logo to brand gold (#C9A961) */
+.logo-gold {
+  filter: brightness(0) saturate(100%) invert(72%) sepia(31%) saturate(577%)
+    hue-rotate(2deg) brightness(95%) contrast(82%);
+}
+
 select,
 input,
 button {
